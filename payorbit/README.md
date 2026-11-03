@@ -32,13 +32,12 @@ Open http://localhost:8000/docs and http://localhost:8000/health.
 
 ## Run with Docker Compose
 
-Create a local environment file from the supplied example, then run:
-
 ```bash
+cp env.sample .env
 docker compose up --build
 ```
 
-The API is available at http://localhost:8000. PostgreSQL data is persisted in a named Docker volume. The default credentials are for local development only.
+The API is available at http://localhost:8000. PostgreSQL data is persisted in a named Docker volume. The supplied credentials are for local development only.
 
 ## Quality checks
 
