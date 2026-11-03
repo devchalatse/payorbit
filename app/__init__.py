@@ -1,1 +1,0 @@
-"""PayOrbit application package."""
