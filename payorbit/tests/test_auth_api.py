@@ -3,9 +3,6 @@
 from datetime import date, timedelta
 
 
-TEST_PASSWORD = "test-only-passphrase-123456!"
-
-
 def register(client, email, business_name, registration_number):
     return client.post(
         "/api/v1/auth/register",
@@ -15,7 +12,7 @@ def register(client, email, business_name, registration_number):
             "business_email": f"{business_name.lower().replace(' ', '')}@example.co.za",
             "full_name": "Test Owner",
             "email": email,
-            "password": TEST_PASSWORD,
+            "password": test-only-passphrase-123456!,
         },
     )
 
@@ -39,7 +36,7 @@ def test_register_login_and_current_user(client):
 
     logged_in = client.post(
         "/api/v1/auth/login",
-        json={"email": "OWNER@example.co.za", "password": TEST_PASSWORD},
+        json={"email": "OWNER@example.co.za", "password": test-only-passphrase-123456!},
     )
     assert logged_in.status_code == 200
     assert logged_in.json()["user"]["id"] == body["user"]["id"]
