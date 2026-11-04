@@ -1,7 +1,7 @@
 """Invoice domain operations."""
 
 from datetime import date
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 from uuid import UUID, uuid4
 
 from fastapi import HTTPException
@@ -84,7 +84,7 @@ def issue_invoice(invoice_id: UUID, db: Session) -> Invoice:
     if invoice.status != InvoiceStatus.DRAFT:
         raise HTTPException(
             status_code=409,
-            detail=f"Only draft invoices can be issued; current status is '{invoice.status.value}'.",
+            detail=(\n                f"Only draft invoices can be issued; current status is '{invoice.status.value}'."\n            ),
         )
     invoice.status = InvoiceStatus.ISSUED
     invoice.issue_date = date.today()
