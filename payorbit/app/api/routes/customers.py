@@ -26,9 +26,7 @@ def create_customer(payload: CustomerCreate, db: Session = Depends(get_db)) -> C
 
 
 @router.get("", response_model=list[CustomerRead])
-def list_customers(
-    business_id: UUID, db: Session = Depends(get_db)
-) -> list[Customer]:
+def list_customers(business_id: UUID, db: Session = Depends(get_db)) -> list[Customer]:
     if db.get(Business, business_id) is None:
         raise HTTPException(status_code=404, detail="Business not found.")
     statement = (
