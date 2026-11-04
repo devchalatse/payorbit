@@ -1,5 +1,7 @@
 """Customer endpoints."""
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -25,7 +27,7 @@ def create_customer(payload: CustomerCreate, db: Session = Depends(get_db)) -> C
 
 @router.get("", response_model=list[CustomerRead])
 def list_customers(
-    business_id: str, db: Session = Depends(get_db)
+    business_id: UUID, db: Session = Depends(get_db)
 ) -> list[Customer]:
     if db.get(Business, business_id) is None:
         raise HTTPException(status_code=404, detail="Business not found.")
@@ -38,7 +40,7 @@ def list_customers(
 
 
 @router.get("/{customer_id}", response_model=CustomerRead)
-def get_customer(customer_id: str, db: Session = Depends(get_db)) -> Customer:
+def get_customer(customer_id: UUID, db: Session = Depends(get_db)) -> Customer:
     customer = db.get(Customer, customer_id)
     if customer is None:
         raise HTTPException(status_code=404, detail="Customer not found.")
