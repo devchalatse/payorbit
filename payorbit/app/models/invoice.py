@@ -9,7 +9,6 @@ from uuid import UUID, uuid4
 from sqlalchemy import (
     Date,
     DateTime,
-    Enum as SqlEnum,
     ForeignKey,
     Integer,
     Numeric,
@@ -17,6 +16,7 @@ from sqlalchemy import (
     Uuid,
     func,
 )
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
