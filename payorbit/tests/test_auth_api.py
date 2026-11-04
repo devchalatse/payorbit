@@ -109,3 +109,70 @@ def test_authenticated_user_can_create_an_additional_business(client):
     listed = client.get("/api/v1/businesses")
     assert listed.status_code == 200
     assert len(listed.json()) == 2
+
+
+def test_registration_rejects_duplicate_email_or_business_registration(client):
+    first = register(client, "owner@example.co.za", "Owner Business", "REG-OWNER")
+    assert first.status_code == 201
+
+    duplicate_email = register(
+        client, "owner@example.co.za", "Different Business", "REG-DIFFERENT"
+    )
+    assert duplicate_email.status_code == 409
+
+    duplicate_registration = register(
+        client, "other@example.co.za", "Other Business", "REG-OWNER"
+    )
+    assert duplicate_registration.status_code == 409
+
+
+def test_registration_rejects_short_password(client):
+    response = client.post(
+        "/api/v1/auth/register",
+        json={
+            "business_name": "Example Business",
+            "business_email": "accounts@example.co.za",
+            "full_name": "Example Owner",
+            "email": "owner@example.co.za",
+            "password": "short",
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_non_member_cannot_create_business_records_for_another_tenant(client):
+    first = register(client, "first@example.co.za", "First Business", "REG-FIRST").json()
+    second = register(client, "second@example.co.za", "Second Business", "REG-SECOND").json()
+    first_business = first["businesses"][0]["id"]
+
+    authenticate(client, second["access_token"])
+    response = client.post(
+        "/api/v1/customers",
+        json={"business_id": first_business, "name": "Attempted Cross-Tenant Customer"},
+    )
+    assert response.status_code == 404
+
+
+def test_non_member_cannot_read_or_issue_another_business_invoice(client):
+    first = register(client, "first@example.co.za", "First Business", "REG-FIRST").json()
+    second = register(client, "second@example.co.za", "Second Business", "REG-SECOND").json()
+    first_business = first["businesses"][0]["id"]
+
+    authenticate(client, first["access_token"])
+    customer = client.post(
+        "/api/v1/customers",
+        json={"business_id": first_business, "name": "First Customer"},
+    ).json()
+    invoice = client.post(
+        "/api/v1/invoices",
+        json={
+            "business_id": first_business,
+            "customer_id": customer["id"],
+            "due_date": (date.today() + timedelta(days=3)).isoformat(),
+            "items": [{"description": "Goods", "quantity": "1", "unit_price_cents": 1000}],
+        },
+    ).json()
+
+    authenticate(client, second["access_token"])
+    assert client.get(f"/api/v1/invoices/{invoice['id']}").status_code == 404
+    assert client.post(f"/api/v1/invoices/{invoice['id']}/issue").status_code == 404
