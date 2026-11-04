@@ -1,5 +1,7 @@
 """Business endpoints."""
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -34,7 +36,7 @@ def list_businesses(db: Session = Depends(get_db)) -> list[Business]:
 
 
 @router.get("/{business_id}", response_model=BusinessRead)
-def get_business(business_id: str, db: Session = Depends(get_db)) -> Business:
+def get_business(business_id: UUID, db: Session = Depends(get_db)) -> Business:
     business = db.get(Business, business_id)
     if business is None:
         raise HTTPException(status_code=404, detail="Business not found.")
