@@ -3,8 +3,8 @@
 from datetime import date, datetime
 from decimal import Decimal
 from enum import StrEnum
-from uuid import UUID, uuid4
 from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
 from sqlalchemy import (
     Date,
