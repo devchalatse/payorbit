@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user, require_business_access
 from app.db.session import get_db
-from app.models.business import Business
 from app.models.customer import Customer
 from app.models.user import User
 from app.schemas.customer import CustomerCreate, CustomerRead
