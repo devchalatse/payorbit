@@ -1,4 +1,4 @@
-.PHONY: install lint format-check test audit docker-build up down
+.PHONY: install lint format-check test audit migrate migration docker-build up down
 
 install:
 	python -m pip install -e ".[dev]"
@@ -23,3 +23,9 @@ up:
 
 down:
 	docker compose down
+
+migrate:
+	alembic upgrade head
+
+migration:
+	alembic revision --autogenerate -m "$(message)"
