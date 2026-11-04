@@ -59,15 +59,15 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> TokenRe
         email=str(payload.business_email).lower(),
     )
     db.add_all([user, business])
-    db.flush()
-    db.add(
-        BusinessMembership(
-            user_id=user.id,
-            business_id=business.id,
-            role=MembershipRole.OWNER,
-        )
-    )
     try:
+        db.flush()
+        db.add(
+            BusinessMembership(
+                user_id=user.id,
+                business_id=business.id,
+                role=MembershipRole.OWNER,
+            )
+        )
         db.commit()
     except IntegrityError as exc:
         db.rollback()
