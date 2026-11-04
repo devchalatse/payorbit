@@ -60,11 +60,7 @@ def create_invoice(payload: InvoiceCreate, db: Session) -> Invoice:
 
 
 def get_invoice(invoice_id: UUID, db: Session) -> Invoice:
-    statement = (
-        select(Invoice)
-        .options(selectinload(Invoice.items))
-        .where(Invoice.id == invoice_id)
-    )
+    statement = select(Invoice).options(selectinload(Invoice.items)).where(Invoice.id == invoice_id)
     invoice = db.scalar(statement)
     if invoice is None:
         raise HTTPException(status_code=404, detail="Invoice not found.")
