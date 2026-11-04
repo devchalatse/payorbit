@@ -2,11 +2,16 @@
 
 from fastapi import FastAPI
 
+from app.api.router import api_router
+
 app = FastAPI(
     title="PayOrbit API",
     description="Business payments and invoice reconciliation platform.",
-    version="0.1.0",
+    version="0.2.0",
 )
+
+
+app.include_router(api_router)
 
 
 @app.get("/health", tags=["health"])
