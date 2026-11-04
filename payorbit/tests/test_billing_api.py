@@ -5,15 +5,20 @@ from datetime import date, timedelta
 
 def create_business_and_customer(client):
     business_response = client.post(
-        "/api/v1/businesses",
+        "/api/v1/auth/register",
         json={
-            "name": "Example Wholesale",
-            "registration_number": "2026/123456/07",
-            "email": "accounts@example.co.za",
+            "business_name": "Example Wholesale",
+            "business_registration_number": "2026/123456/07",
+            "business_email": "accounts@example.co.za",
+            "full_name": "Example Owner",
+            "email": "owner@example.co.za",
+            "password": "test-only-passphrase-123456!",
         },
     )
     assert business_response.status_code == 201
-    business = business_response.json()
+    auth = business_response.json()
+    client.headers.update({"Authorization": f"Bearer {auth['access_token']}"})
+    business = auth["businesses"][0]
 
     customer_response = client.post(
         "/api/v1/customers",
@@ -113,11 +118,14 @@ def test_invoice_due_date_cannot_be_in_past(client):
 def test_duplicate_business_registration_number_is_rejected(client):
     create_business_and_customer(client)
     response = client.post(
-        "/api/v1/businesses",
+        "/api/v1/auth/register",
         json={
-            "name": "Duplicate Registration",
-            "registration_number": "2026/123456/07",
-            "email": "duplicate@example.co.za",
+            "business_name": "Duplicate Registration",
+            "business_registration_number": "2026/123456/07",
+            "business_email": "duplicate@example.co.za",
+            "full_name": "Another Owner",
+            "email": "another@example.co.za",
+            "password": "test-only-passphrase-123456!",
         },
     )
     assert response.status_code == 409
