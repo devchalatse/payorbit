@@ -25,9 +25,13 @@ def create_business(
 ) -> Business:
     business = Business(**payload.model_dump())
     db.add(business)
-    db.flush()
-    db.add(BusinessMembership(business_id=business.id, user_id=user.id, role=MembershipRole.OWNER))
     try:
+        db.flush()
+        db.add(
+            BusinessMembership(
+                business_id=business.id, user_id=user.id, role=MembershipRole.OWNER
+            )
+        )
         db.commit()
     except IntegrityError as exc:
         db.rollback()
