@@ -6,7 +6,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_current_user
-from app.core.security import (\n    ACCESS_TOKEN_MINUTES,\n    create_access_token,\n    hash_password,\n    verify_password,\n)
+from app.core.security import (
+    ACCESS_TOKEN_MINUTES,
+    create_access_token,
+    hash_password,
+    verify_password,
+)
 from app.db.session import get_db
 from app.models.business import Business
 from app.models.business_membership import BusinessMembership, MembershipRole
@@ -77,7 +82,11 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> TokenRe
 @router.post("/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)) -> TokenResponse:
     user = db.scalar(select(User).where(User.email == str(payload.email).lower()))
-    if (\n        user is None\n        or not user.is_active\n        or not verify_password(payload.password, user.password_hash)\n    ):
+    if (
+        user is None
+        or not user.is_active
+        or not verify_password(payload.password, user.password_hash)
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password.",
