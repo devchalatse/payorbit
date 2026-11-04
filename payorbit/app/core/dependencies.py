@@ -1,8 +1,8 @@
 """Authentication and business-tenant authorization dependencies."""
 
-from collections.abc import Callable
 from uuid import UUID
 
+import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
@@ -28,7 +28,7 @@ def get_current_user(
         )
     try:
         user_id = decode_access_token(credentials.credentials)
-    except (ValueError, TypeError, Exception) as exc:
+    except (jwt.InvalidTokenError, ValueError, TypeError) as exc:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired access token.",
@@ -45,11 +45,7 @@ def get_current_user(
     return user
 
 
-def require_business_access(
-    business_id: UUID,
-    user: User,
-    db: Session,
-) -> BusinessMembership:
+def require_business_access(business_id: UUID, user: User, db: Session) -> BusinessMembership:
     membership = db.scalar(
         select(BusinessMembership).where(
             BusinessMembership.business_id == business_id,
@@ -57,6 +53,5 @@ def require_business_access(
         )
     )
     if membership is None:
-        # Do not disclose whether another tenant's business exists.
         raise HTTPException(status_code=404, detail="Business not found.")
     return membership
