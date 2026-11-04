@@ -9,5 +9,5 @@ __pycache__
 htmlcov
 .env
 .env.*
-!.env.sample
+!.env.example
 tests
