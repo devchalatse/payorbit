@@ -2,12 +2,16 @@
 
 from datetime import datetime
 from uuid import UUID, uuid4
+from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, String, func
+from sqlalchemy import DateTime, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Uuid
 
 from app.db.base import Base
+
+if TYPE_CHECKING:
+    from app.models.customer import Customer
+    from app.models.invoice import Invoice
 
 
 class Business(Base):
