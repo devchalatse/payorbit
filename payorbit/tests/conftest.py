@@ -9,7 +9,7 @@ from sqlalchemy.pool import StaticPool
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
-from app.models import Business, Customer, Invoice, InvoiceItem  # noqa: F401
+from app.models import (\n    Business,\n    BusinessMembership,\n    Customer,\n    Invoice,\n    InvoiceItem,\n    User,\n)  # noqa: F401
 
 
 @pytest.fixture
