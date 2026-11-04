@@ -26,7 +26,7 @@ python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -e ".[dev]"
-cp env.sample .env
+cp .env.example .env
 ```
 
 Set `DATABASE_URL` in your shell or `.env` to a reachable PostgreSQL database, then run:
@@ -41,7 +41,7 @@ Open http://localhost:8000/docs and http://localhost:8000/health.
 ## Run with Docker Compose
 
 ```bash
-cp env.sample .env
+cp .env.example .env
 docker compose up --build
 ```
 
