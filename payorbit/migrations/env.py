@@ -7,7 +7,14 @@ from sqlalchemy import engine_from_config, pool
 
 from app.db.base import Base
 from app.db.session import DATABASE_URL
-from app.models import (\n    Business,\n    BusinessMembership,\n    Customer,\n    Invoice,\n    InvoiceItem,\n    User,\n)  # noqa: F401
+from app.models import (
+    Business,
+    BusinessMembership,
+    Customer,
+    Invoice,
+    InvoiceItem,
+    User,
+)  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL.replace("%", "%%"))
