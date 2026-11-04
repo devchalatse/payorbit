@@ -31,7 +31,7 @@ def _token_response(user: User, db: Session) -> TokenResponse:
         business = db.get(Business, membership.business_id)
         if business is not None:
             businesses.append(
-                BusinessSummary(id=business.id, name=business.name, role=membership.role.value)
+                BusinessSummary(id=business.id, name=business.name, role=str(membership.role))
             )
     return TokenResponse(
         access_token=create_access_token(user.id),
