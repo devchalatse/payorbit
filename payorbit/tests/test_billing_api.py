@@ -121,3 +121,102 @@ def test_duplicate_business_registration_number_is_rejected(client):
         },
     )
     assert response.status_code == 409
+
+
+def test_business_read_endpoints(client):
+    business, _ = create_business_and_customer(client)
+
+    listed = client.get("/api/v1/businesses")
+    assert listed.status_code == 200
+    assert len(listed.json()) == 1
+
+    fetched = client.get(f"/api/v1/businesses/{business['id']}")
+    assert fetched.status_code == 200
+    assert fetched.json()["id"] == business["id"]
+
+    missing = client.get("/api/v1/businesses/00000000-0000-0000-0000-000000000000")
+    assert missing.status_code == 404
+
+
+def test_customer_read_endpoints_and_unknown_business(client):
+    business, customer = create_business_and_customer(client)
+
+    listed = client.get(f"/api/v1/customers?business_id={business['id']}")
+    assert listed.status_code == 200
+    assert len(listed.json()) == 1
+
+    fetched = client.get(f"/api/v1/customers/{customer['id']}")
+    assert fetched.status_code == 200
+    assert fetched.json()["id"] == customer["id"]
+
+    missing = client.post(
+        "/api/v1/customers",
+        json={
+            "business_id": "00000000-0000-0000-0000-000000000000",
+            "name": "Unknown business customer",
+        },
+    )
+    assert missing.status_code == 404
+
+
+def test_invoice_read_endpoints(client):
+    business, customer = create_business_and_customer(client)
+    created = client.post(
+        "/api/v1/invoices",
+        json={
+            "business_id": business["id"],
+            "customer_id": customer["id"],
+            "due_date": (date.today() + timedelta(days=5)).isoformat(),
+            "items": [{"description": "Product", "quantity": "1", "unit_price_cents": 1250}],
+        },
+    )
+    invoice = created.json()
+
+    listed = client.get(f"/api/v1/invoices?business_id={business['id']}")
+    assert listed.status_code == 200
+    assert len(listed.json()) == 1
+
+    fetched = client.get(f"/api/v1/invoices/{invoice['id']}")
+    assert fetched.status_code == 200
+    assert fetched.json()["id"] == invoice["id"]
+
+    missing = client.get(
+        "/api/v1/invoices/00000000-0000-0000-0000-000000000000"
+    )
+    assert missing.status_code == 404
+
+
+def test_invoice_requires_existing_business_and_customer(client):
+    business, _ = create_business_and_customer(client)
+    payload = {
+        "business_id": business["id"],
+        "customer_id": "00000000-0000-0000-0000-000000000000",
+        "due_date": (date.today() + timedelta(days=5)).isoformat(),
+        "items": [{"description": "Product", "quantity": "1", "unit_price_cents": 1250}],
+    }
+    missing_customer = client.post("/api/v1/invoices", json=payload)
+    assert missing_customer.status_code == 404
+
+    payload["business_id"] = "00000000-0000-0000-0000-000000000000"
+    missing_business = client.post("/api/v1/invoices", json=payload)
+    assert missing_business.status_code == 404
+
+
+def test_invoice_validation_rejects_empty_items_and_negative_price(client):
+    business, customer = create_business_and_customer(client)
+    base = {
+        "business_id": business["id"],
+        "customer_id": customer["id"],
+        "due_date": (date.today() + timedelta(days=5)).isoformat(),
+    }
+    empty_items = client.post("/api/v1/invoices", json={**base, "items": []})
+    assert empty_items.status_code == 422
+
+    invalid_price = client.post(
+        "/api/v1/invoices",
+        json={
+            **base,
+            "items": [{"description": "Invalid", "quantity": "1", "unit_price_cents": -10}],
+        },
+    )
+    assert invalid_price.status_code == 422
