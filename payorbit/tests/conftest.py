@@ -2,8 +2,6 @@
 
 import os
 
-os.environ.setdefault("JWT_SECRET_KEY", "test-only-secret-key-with-at-least-32-characters")
-
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -25,6 +23,7 @@ from app.models import (
 
 @pytest.fixture
 def client():
+    os.environ.setdefault("JWT_SECRET_KEY", "test-only-secret-key-with-at-least-32-characters")
     engine = create_engine(
         "sqlite://",
         connect_args={"check_same_thread": False},
