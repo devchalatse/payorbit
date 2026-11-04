@@ -180,9 +180,7 @@ def test_invoice_read_endpoints(client):
     assert fetched.status_code == 200
     assert fetched.json()["id"] == invoice["id"]
 
-    missing = client.get(
-        "/api/v1/invoices/00000000-0000-0000-0000-000000000000"
-    )
+    missing = client.get("/api/v1/invoices/00000000-0000-0000-0000-000000000000")
     assert missing.status_code == 404
 
 
