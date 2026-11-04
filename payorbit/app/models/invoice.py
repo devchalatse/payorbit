@@ -2,8 +2,9 @@
 
 from datetime import date, datetime
 from decimal import Decimal
-from enum import Enum
+from enum import StrEnum
 from uuid import UUID, uuid4
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     Date,
@@ -20,8 +21,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 
+if TYPE_CHECKING:
+    from app.models.business import Business
+    from app.models.customer import Customer
 
-class InvoiceStatus(str, Enum):
+
+class InvoiceStatus(StrEnum):
     DRAFT = "draft"
     ISSUED = "issued"
     PARTIALLY_PAID = "partially_paid"
