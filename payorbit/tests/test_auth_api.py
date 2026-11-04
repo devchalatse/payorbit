@@ -115,14 +115,10 @@ def test_registration_rejects_duplicate_email_or_business_registration(client):
     first = register(client, "owner@example.co.za", "Owner Business", "REG-OWNER")
     assert first.status_code == 201
 
-    duplicate_email = register(
-        client, "owner@example.co.za", "Different Business", "REG-DIFFERENT"
-    )
+    duplicate_email = register(client, "owner@example.co.za", "Different Business", "REG-DIFFERENT")
     assert duplicate_email.status_code == 409
 
-    duplicate_registration = register(
-        client, "other@example.co.za", "Other Business", "REG-OWNER"
-    )
+    duplicate_registration = register(client, "other@example.co.za", "Other Business", "REG-OWNER")
     assert duplicate_registration.status_code == 409
 
 
