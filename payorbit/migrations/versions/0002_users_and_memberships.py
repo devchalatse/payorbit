@@ -1,7 +1,7 @@
 """Add users and business memberships."""
 
-from alembic import op
 import sqlalchemy as sa
+from alembic import op
 
 revision = "0002_users_memberships"
 down_revision = "0001_initial"
@@ -29,7 +29,9 @@ def upgrade() -> None:
         sa.Column("business_id", sa.Uuid(), nullable=False),
         sa.Column("user_id", sa.Uuid(), nullable=False),
         sa.Column("role", sa.String(length=20), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False),
+        sa.Column(
+            "created_at", sa.DateTime(timezone=True), server_default=sa.func.now(), nullable=False
+        ),
         sa.ForeignKeyConstraint(["business_id"], ["businesses.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
