@@ -84,7 +84,9 @@ def issue_invoice(invoice_id: UUID, db: Session) -> Invoice:
     if invoice.status != InvoiceStatus.DRAFT:
         raise HTTPException(
             status_code=409,
-            detail=(\n                f"Only draft invoices can be issued; current status is '{invoice.status.value}'."\n            ),
+            detail=(
+                f"Only draft invoices can be issued; current status is '{invoice.status.value}'."
+            ),
         )
     invoice.status = InvoiceStatus.ISSUED
     invoice.issue_date = date.today()
