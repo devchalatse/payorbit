@@ -28,9 +28,7 @@ def create_business(
     try:
         db.flush()
         db.add(
-            BusinessMembership(
-                business_id=business.id, user_id=user.id, role=MembershipRole.OWNER
-            )
+            BusinessMembership(business_id=business.id, user_id=user.id, role=MembershipRole.OWNER)
         )
         db.commit()
     except IntegrityError as exc:
